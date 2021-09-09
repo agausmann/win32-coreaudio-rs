@@ -13,7 +13,7 @@ fn main() {
                 AudioSessionState, AudioSessionDisconnectReason, IAudioSessionControl2,
                 IAudioSessionEnumerator, ISimpleAudioVolume
             },
-            Storage::StructuredStorage::STGM_READ,
+            Storage::StructuredStorage::{STGM_READ, STGM_READWRITE, STGM_WRITE},
             System::{
                 Com::{CoInitializeEx, CoCreateInstance, CoTaskMemFree},
                 OleAutomation::VARENUM,

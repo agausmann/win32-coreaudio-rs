@@ -84,23 +84,23 @@ impl NotificationClientWrapper {
         self.inner.on_default_device_changed(
             DataFlow::from_raw(flow),
             DeviceRole::from_raw(role),
-            unsafe { WinStr::new(&device_id) },
+            unsafe { WinStr::from_pwstr(&device_id) },
         )
     }
 
     fn OnDeviceAdded(&mut self, device_id: PWSTR) -> windows::Result<()> {
         self.inner
-            .on_device_added(unsafe { WinStr::new(&device_id) })
+            .on_device_added(unsafe { WinStr::from_pwstr(&device_id) })
     }
 
     fn OnDeviceRemoved(&mut self, device_id: PWSTR) -> windows::Result<()> {
         self.inner
-            .on_device_removed(unsafe { WinStr::new(&device_id) })
+            .on_device_removed(unsafe { WinStr::from_pwstr(&device_id) })
     }
 
     fn OnDeviceStateChanged(&mut self, device_id: PWSTR, new_state: u32) -> windows::Result<()> {
         self.inner.on_device_state_changed(
-            unsafe { WinStr::new(&device_id) },
+            unsafe { WinStr::from_pwstr(&device_id) },
             DeviceState::from_raw(new_state),
         )
     }
@@ -111,6 +111,6 @@ impl NotificationClientWrapper {
         key: PROPERTYKEY,
     ) -> windows::Result<()> {
         self.inner
-            .on_property_value_changed(unsafe { WinStr::new(&device_id) }, PropertyKey(key))
+            .on_property_value_changed(unsafe { WinStr::from_pwstr(&device_id) }, PropertyKey(key))
     }
 }

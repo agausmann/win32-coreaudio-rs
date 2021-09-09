@@ -7,6 +7,7 @@ pub mod device;
 pub mod device_collection;
 pub mod device_enumerator;
 pub mod notification_client;
+pub mod property_store;
 pub mod string;
 
 use crate::bindings::Windows::Win32::System::Com::{CoInitializeEx, COINIT_MULTITHREADED};

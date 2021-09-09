@@ -1,86 +1,78 @@
 //! Collection of translated bitflag and enumeration types.
 
-use crate::bindings::Windows::Win32::Media::Audio::CoreAudio::{
-    eAll, eCapture, eCommunications, eConsole, eMultimedia, eRender, EDataFlow, ERole,
-    DEVICE_STATEMASK_ALL, DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT,
-    DEVICE_STATE_UNPLUGGED,
+use crate::bindings::Windows::Win32::{
+    Media::Audio::CoreAudio::{
+        eAll, eCapture, eCommunications, eConsole, eMultimedia, eRender, EDataFlow, ERole,
+        DEVICE_STATEMASK_ALL, DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT,
+        DEVICE_STATE_UNPLUGGED,
+    },
+    Storage::StructuredStorage::{STGM_READ, STGM_READWRITE, STGM_WRITE},
 };
 
-/// See also: [`EDataFlow`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/ne-mmdeviceapi-edataflow)
-pub enum DataFlow {
-    Render,
-    Capture,
+macro_rules! map_enum {
+    ($(
+        $(#[$meta:meta])*
+        $vis:vis enum $name:ident: $maptype:ident {
+            $($varname:ident = $varmap:expr,)*
+        }
+    )*) => {$(
+        $(#[$meta])*
+        $vis enum $name {
+            $($varname),*
+        }
+
+        impl $name {
+            #[allow(dead_code)]
+            pub(crate) fn from_raw(raw: $maptype) -> Self {
+                match raw {
+                    $(x if x == $varmap => Self::$varname,)*
+                    _ => panic!("invalid raw value {:?}", raw)
+                }
+            }
+
+            #[allow(dead_code)]
+            pub(crate) fn to_raw(&self) -> $maptype {
+                match self {
+                    $(Self::$varname => $varmap),*
+                }
+            }
+        }
+    )*}
 }
 
-impl DataFlow {
-    pub(crate) fn from_raw(raw: EDataFlow) -> Self {
-        if raw == eRender {
-            Self::Render
-        } else if raw == eCapture {
-            Self::Capture
-        } else {
-            panic!("invalid data flow {:?}", raw);
-        }
+map_enum! {
+    /// See also: [`EDataFlow`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/ne-mmdeviceapi-edataflow)
+    pub enum DataFlow: EDataFlow {
+        Render = eRender,
+        Capture = eCapture,
     }
 
-    pub(crate) fn to_raw(&self) -> EDataFlow {
-        match self {
-            Self::Render => eRender,
-            Self::Capture => eCapture,
-        }
-    }
-}
-
-/// See also: [`EDataFlow`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/ne-mmdeviceapi-edataflow)
-pub enum DataFlowMask {
-    Render,
-    Capture,
-    All,
-}
-
-impl DataFlowMask {
-    pub(crate) fn from_raw(raw: EDataFlow) -> Self {
-        if raw == eRender {
-            Self::Render
-        } else if raw == eCapture {
-            Self::Capture
-        } else if raw == eAll {
-            Self::All
-        } else {
-            panic!("invalid data flow mask {:?}", raw);
-        }
+    /// See also: [`EDataFlow`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/ne-mmdeviceapi-edataflow)
+    pub enum DataFlowMask: EDataFlow {
+        Render = eRender,
+        Capture = eCapture,
+        All = eAll,
     }
 
-    pub(crate) fn to_raw(&self) -> EDataFlow {
-        match self {
-            Self::Render => eRender,
-            Self::Capture => eCapture,
-            Self::All => eAll,
-        }
+    /// See also: [`DEVICE_STATE_XXXX Constants`](https://docs.microsoft.com/en-us/windows/win32/coreaudio/device-state-xxx-constants)
+    pub enum DeviceState: u32 {
+        Active = DEVICE_STATE_ACTIVE,
+        Disabled = DEVICE_STATE_DISABLED,
+        NotPresent = DEVICE_STATE_NOTPRESENT,
+        Unplugged = DEVICE_STATE_UNPLUGGED,
     }
-}
 
-/// See also: [`DEVICE_STATE_XXXX Constants`](https://docs.microsoft.com/en-us/windows/win32/coreaudio/device-state-xxx-constants)
-pub enum DeviceState {
-    Active,
-    Disabled,
-    NotPresent,
-    Unplugged,
-}
+    /// See also: [`ERole`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/ne-mmdeviceapi-erole)
+    pub enum DeviceRole: ERole {
+        Console = eConsole,
+        Multimedia = eMultimedia,
+        Communications = eCommunications,
+    }
 
-impl DeviceState {
-    pub(crate) fn from_raw(raw: u32) -> Self {
-        if raw == DEVICE_STATE_ACTIVE {
-            Self::Active
-        } else if raw == DEVICE_STATE_DISABLED {
-            Self::Disabled
-        } else if raw == DEVICE_STATE_NOTPRESENT {
-            Self::NotPresent
-        } else if raw == DEVICE_STATE_UNPLUGGED {
-            Self::Unplugged
-        } else {
-            panic!("invalid device state {:?}", raw);
-        }
+    pub enum StorageAccessMode: i32 {
+        Read = STGM_READ,
+        Write = STGM_WRITE,
+        ReadWrite = STGM_READWRITE,
     }
 }
 
@@ -92,34 +84,5 @@ bitflags::bitflags! {
         const NOT_PRESENT = DEVICE_STATE_NOTPRESENT;
         const UNPLUGGED = DEVICE_STATE_UNPLUGGED;
         const ALL = DEVICE_STATEMASK_ALL;
-    }
-}
-
-/// See also: [`ERole`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/ne-mmdeviceapi-erole)
-pub enum DeviceRole {
-    Console,
-    Multimedia,
-    Communications,
-}
-
-impl DeviceRole {
-    pub(crate) fn from_raw(raw: ERole) -> Self {
-        if raw == eConsole {
-            Self::Console
-        } else if raw == eMultimedia {
-            Self::Multimedia
-        } else if raw == eCommunications {
-            Self::Communications
-        } else {
-            panic!("invalid device role {:?}", raw);
-        }
-    }
-
-    pub(crate) fn to_raw(&self) -> ERole {
-        match self {
-            Self::Console => eConsole,
-            Self::Multimedia => eMultimedia,
-            Self::Communications => eCommunications,
-        }
     }
 }

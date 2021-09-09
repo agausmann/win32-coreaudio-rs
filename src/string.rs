@@ -14,7 +14,7 @@ impl<'a> WinStr<'a> {
     /// # Safety
     ///
     /// - `pwstr` must point to a valid, null-terminated string.
-    pub(crate) unsafe fn new(pwstr: &'a PWSTR) -> Self {
+    pub(crate) unsafe fn from_pwstr(pwstr: &'a PWSTR) -> Self {
         Self { pwstr }
     }
 
@@ -57,7 +57,7 @@ impl WinString {
     /// API calls, and should be mentioned in the function documentation. For
     /// example, see [`IMMDevice::GetId`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdevice-getid).
     /// If this is not the case, create a borrowed [`WinStr`] instead.
-    pub(crate) unsafe fn new(pwstr: PWSTR) -> Self {
+    pub(crate) unsafe fn from_pwstr(pwstr: PWSTR) -> Self {
         Self { pwstr }
     }
 
