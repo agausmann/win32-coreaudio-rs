@@ -1,14 +1,14 @@
-use crate::bindings::Windows::Win32::{
-    Foundation::PWSTR,
-    Media::Audio::CoreAudio::{EDataFlow, ERole},
-    System::PropertiesSystem::PROPERTYKEY,
-};
 use crate::bindings::*;
 use crate::bits::{DataFlow, DeviceRole, DeviceState};
 use crate::string::WinStr;
-
-// TODO put this in a better location
-pub struct PropertyKey(PROPERTYKEY);
+use crate::{
+    bindings::Windows::Win32::{
+        Foundation::PWSTR,
+        Media::Audio::CoreAudio::{EDataFlow, ERole},
+        System::PropertiesSystem::PROPERTYKEY,
+    },
+    property_store::PropertyKey,
+};
 
 /// See also: [`IMMNotificationClient`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nn-mmdeviceapi-immnotificationclient)
 pub trait NotificationClient: 'static {
@@ -110,7 +110,9 @@ impl NotificationClientWrapper {
         device_id: PWSTR,
         key: PROPERTYKEY,
     ) -> windows::Result<()> {
-        self.inner
-            .on_property_value_changed(unsafe { WinStr::from_pwstr(&device_id) }, PropertyKey(key))
+        self.inner.on_property_value_changed(
+            unsafe { WinStr::from_pwstr(&device_id) },
+            PropertyKey::from_raw(key),
+        )
     }
 }

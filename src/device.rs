@@ -1,7 +1,13 @@
 use crate::{
-    bindings::Windows::Win32::Media::Audio::CoreAudio::IMMDevice,
+    bindings::Windows::Win32::{
+        Media::Audio::CoreAudio::IMMDevice,
+        System::SystemServices::{
+            DEVPKEY_DeviceInterface_FriendlyName, DEVPKEY_Device_DeviceDesc,
+            DEVPKEY_Device_FriendlyName,
+        },
+    },
     bits::{DeviceState, StorageAccessMode},
-    property_store::PropertyStore,
+    property_store::{PropertyKey, PropertyStore},
     string::WinString,
 };
 
@@ -39,3 +45,8 @@ impl Device {
         }
     }
 }
+
+pub const DEVICE_INTERFACE_FRIENDLY_NAME: PropertyKey =
+    PropertyKey::from_raw(DEVPKEY_DeviceInterface_FriendlyName);
+pub const DEVICE_DESCRIPTION: PropertyKey = PropertyKey::from_raw(DEVPKEY_Device_DeviceDesc);
+pub const DEVICE_FRIENDLY_NAME: PropertyKey = PropertyKey::from_raw(DEVPKEY_Device_FriendlyName);

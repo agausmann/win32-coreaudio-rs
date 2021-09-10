@@ -34,7 +34,7 @@ impl<'a> WinStr<'a> {
     ///
     /// This pointer will be valid as long as the parent `WinStr` object is
     /// kept alive.
-    pub(crate) fn as_pwstr(&self) -> PWSTR {
+    pub(crate) fn to_pwstr(&self) -> PWSTR {
         *self.pwstr
     }
 }
@@ -74,6 +74,16 @@ impl WinString {
     /// kept alive.
     pub fn as_raw(&self) -> *const u16 {
         self.pwstr.0 as *const _
+    }
+
+    /// Gets a copy of the wrapped PWSTR pointer.
+    ///
+    /// # Safety
+    ///
+    /// This pointer will be valid as long as the parent `WinStr` object is
+    /// kept alive.
+    pub(crate) fn to_pwstr(&self) -> PWSTR {
+        self.pwstr
     }
 }
 

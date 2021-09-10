@@ -17,8 +17,11 @@ fn main() {
             System::{
                 Com::{CoInitializeEx, CoCreateInstance, CoTaskMemFree},
                 OleAutomation::VARENUM,
-                PropertiesSystem::IPropertyStore,
-                SystemServices::DEVPKEY_Device_FriendlyName,
+                PropertiesSystem::{IPropertyStore, PropVariantToStringAlloc},
+                SystemServices::{
+                    DEVPKEY_DeviceInterface_FriendlyName, DEVPKEY_Device_DeviceDesc,
+                    DEVPKEY_Device_FriendlyName,
+                },
             },
         },
     }
