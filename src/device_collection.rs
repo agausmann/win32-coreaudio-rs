@@ -1,4 +1,4 @@
-use std::{convert::TryInto, iter::FusedIterator};
+use std::{iter::FusedIterator, ops::Range};
 
 use crate::{
     bindings::Windows::Win32::Media::Audio::CoreAudio::IMMDeviceCollection, device::Device,
@@ -13,6 +13,14 @@ impl DeviceCollection {
     pub(crate) fn new(inner: IMMDeviceCollection) -> Self {
         Self { inner }
     }
+
+    pub fn get_count(&self) -> windows::Result<u32> {
+        unsafe { self.inner.GetCount() }
+    }
+
+    pub fn item(&self, device: u32) -> windows::Result<Device> {
+        unsafe { self.inner.Item(device).map(Device::new) }
+    }
 }
 
 impl<'a> IntoIterator for &'a DeviceCollection {
@@ -20,23 +28,21 @@ impl<'a> IntoIterator for &'a DeviceCollection {
     type Item = Device;
 
     fn into_iter(self) -> Self::IntoIter {
-        Iter::new(&self.inner)
+        Iter::new(self)
     }
 }
 
 pub struct Iter<'a> {
-    inner: &'a IMMDeviceCollection,
-    count: u32,
-    next_index: u32,
+    inner: &'a DeviceCollection,
+    range: Range<u32>,
 }
 
 impl<'a> Iter<'a> {
-    pub(crate) fn new(inner: &'a IMMDeviceCollection) -> Self {
-        let count = unsafe { inner.GetCount().unwrap() };
+    pub(crate) fn new(inner: &'a DeviceCollection) -> Self {
+        let count = inner.get_count().unwrap();
         Self {
             inner,
-            count,
-            next_index: 0,
+            range: 0..count,
         }
     }
 }
@@ -45,20 +51,14 @@ impl<'a> Iterator for Iter<'a> {
     type Item = Device;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.next_index < self.count {
-            let device = unsafe { self.inner.Item(self.next_index).unwrap() };
-            self.next_index += 1;
-            Some(Device::new(device))
-        } else {
-            None
-        }
+        self.range
+            .next()
+            .map(|index| self.inner.item(index).unwrap())
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let size = (self.count - self.next_index)
-            .try_into()
-            .expect("size out of bounds");
-        (size, Some(size))
+        let len = self.range.len();
+        (len, Some(len))
     }
 }
 
