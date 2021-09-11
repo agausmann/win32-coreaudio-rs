@@ -11,11 +11,12 @@ fn main() {
                 IAudioEndpointVolume, IAudioEndpointVolumeCallback, IMMDeviceCollection,
                 IAudioSessionNotification, IAudioSessionControl, IAudioSessionEvents,
                 AudioSessionState, AudioSessionDisconnectReason, IAudioSessionControl2,
-                IAudioSessionEnumerator, ISimpleAudioVolume
+                IAudioSessionEnumerator, ISimpleAudioVolume, ENDPOINT_HARDWARE_SUPPORT_METER,
+                ENDPOINT_HARDWARE_SUPPORT_MUTE, ENDPOINT_HARDWARE_SUPPORT_VOLUME,
             },
             Storage::StructuredStorage::{STGM_READ, STGM_READWRITE, STGM_WRITE},
             System::{
-                Com::{CoInitializeEx, CoCreateInstance, CoTaskMemFree},
+                Com::{CoInitializeEx, CoCreateInstance, CoTaskMemFree, CLSCTX},
                 OleAutomation::VARENUM,
                 PropertiesSystem::{IPropertyStore, PropVariantToStringAlloc},
                 SystemServices::{

@@ -1,7 +1,13 @@
+#![warn(unsafe_op_in_unsafe_fn)]
+
 mod bindings {
+    #![allow(unsafe_op_in_unsafe_fn)]
+
     windows::include_bindings!();
 }
 
+pub mod audio_endpoint_volume;
+pub mod audio_endpoint_volume_callback;
 pub mod bits;
 pub mod device;
 pub mod device_collection;

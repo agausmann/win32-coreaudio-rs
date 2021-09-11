@@ -4,7 +4,8 @@ use crate::bindings::Windows::Win32::{
     Media::Audio::CoreAudio::{
         eAll, eCapture, eCommunications, eConsole, eMultimedia, eRender, EDataFlow, ERole,
         DEVICE_STATEMASK_ALL, DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT,
-        DEVICE_STATE_UNPLUGGED,
+        DEVICE_STATE_UNPLUGGED, ENDPOINT_HARDWARE_SUPPORT_METER, ENDPOINT_HARDWARE_SUPPORT_MUTE,
+        ENDPOINT_HARDWARE_SUPPORT_VOLUME,
     },
     Storage::StructuredStorage::{STGM_READ, STGM_READWRITE, STGM_WRITE},
 };
@@ -84,5 +85,12 @@ bitflags::bitflags! {
         const NOT_PRESENT = DEVICE_STATE_NOTPRESENT;
         const UNPLUGGED = DEVICE_STATE_UNPLUGGED;
         const ALL = DEVICE_STATEMASK_ALL;
+    }
+
+    /// See also: [`ENDPOINT_HARDWARE_SUPPORT_XXX Constants`](https://docs.microsoft.com/en-us/windows/win32/coreaudio/endpoint-hardware-support-xxx-constants)
+    pub struct HardwareSupportMask: u32 {
+        const MUTE = ENDPOINT_HARDWARE_SUPPORT_MUTE;
+        const METER = ENDPOINT_HARDWARE_SUPPORT_METER;
+        const VOLUME = ENDPOINT_HARDWARE_SUPPORT_VOLUME;
     }
 }

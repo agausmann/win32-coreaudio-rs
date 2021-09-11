@@ -1,15 +1,21 @@
 use crate::{
+    audio_endpoint_volume::AudioEndpointVolume,
     bindings::Windows::Win32::{
         Media::Audio::CoreAudio::IMMDevice,
-        System::SystemServices::{
-            DEVPKEY_DeviceInterface_FriendlyName, DEVPKEY_Device_DeviceDesc,
-            DEVPKEY_Device_FriendlyName,
+        Storage::StructuredStorage::PROPVARIANT,
+        System::{
+            Com::CLSCTX_ALL,
+            SystemServices::{
+                DEVPKEY_DeviceInterface_FriendlyName, DEVPKEY_Device_DeviceDesc,
+                DEVPKEY_Device_FriendlyName,
+            },
         },
     },
     bits::{DeviceState, StorageAccessMode},
     property_store::{PropertyKey, PropertyStore},
     string::WinString,
 };
+use windows::{Abi, Interface};
 
 /// See also: [`IMMDevice`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nn-mmdeviceapi-immdevice)
 pub struct Device {
@@ -21,7 +27,21 @@ impl Device {
         Self { inner }
     }
 
-    //TODO IMMDevice::Activate
+    pub(crate) unsafe fn activate<T>(&self, params: *mut PROPVARIANT) -> windows::Result<T>
+    where
+        T: Activate,
+    {
+        let mut raw = None;
+        unsafe {
+            self.inner
+                .Activate(&T::Raw::IID, CLSCTX_ALL.0, params, raw.set_abi())?;
+        }
+        Ok(T::from_raw(raw.unwrap()))
+    }
+
+    pub fn get_audio_endpoint_volume(&self) -> windows::Result<AudioEndpointVolume> {
+        unsafe { self.activate(std::ptr::null_mut()) }
+    }
 
     /// See also: [`IMMDevice::GetId`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdevice-getid)
     pub fn get_id(&self) -> windows::Result<WinString> {
@@ -44,6 +64,12 @@ impl Device {
                 .map(PropertyStore::new)
         }
     }
+}
+
+pub(crate) trait Activate {
+    type Raw: windows::Interface;
+
+    fn from_raw(raw: Self::Raw) -> Self;
 }
 
 pub const DEVICE_INTERFACE_FRIENDLY_NAME: PropertyKey =
