@@ -31,7 +31,7 @@ pub trait AudioSessionEvents: 'static {
     /// See also: [`IAudioSessionEvents::OnDisplayNameChanged`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessionevents-ondisplaynamechanged)
     fn on_display_name_changed(
         &mut self,
-        new_display_name: WinStr,
+        new_display_name: &WinStr,
         event_context: Option<&Guid>,
     ) -> windows::Result<()> {
         let _ = (new_display_name, event_context);
@@ -51,7 +51,7 @@ pub trait AudioSessionEvents: 'static {
     /// See also: [`IAudioSessionEvents::OnIconPathChanged`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessionevents-oniconpathchanged)
     fn on_icon_path_changed(
         &mut self,
-        new_icon_path: WinStr,
+        new_icon_path: &WinStr,
         event_context: Option<&Guid>,
     ) -> windows::Result<()> {
         let _ = (new_icon_path, event_context);

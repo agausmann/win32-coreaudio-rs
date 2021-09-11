@@ -5,6 +5,7 @@ use crate::{
 };
 
 /// See also: [`ISimpleAudioVolume`](https://docs.microsoft.com/en-us/windows/win32/api/audioclient/nn-audioclient-isimpleaudiovolume)
+#[derive(Debug, Clone)]
 pub struct SimpleAudioVolume {
     inner: ISimpleAudioVolume,
 }

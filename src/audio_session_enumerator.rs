@@ -6,6 +6,7 @@ use crate::{
 };
 
 /// See also: [`IAudioSessionEnumerator`](https://docs.microsoft.com/en-us/windows/desktop/api/audiopolicy/nn-audiopolicy-iaudiosessionenumerator)
+#[derive(Debug, Clone)]
 pub struct AudioSessionEnumerator {
     inner: IAudioSessionEnumerator,
 }
@@ -33,6 +34,7 @@ impl<'a> IntoIterator for &'a AudioSessionEnumerator {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct AudioSessionIter<'a> {
     inner: &'a AudioSessionEnumerator,
     range: Range<i32>,

@@ -20,6 +20,7 @@ use crate::{
 use windows::{Abi, Interface};
 
 /// See also: [`IMMDevice`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nn-mmdeviceapi-immdevice)
+#[derive(Debug, Clone)]
 pub struct Device {
     inner: IMMDevice,
 }
@@ -55,7 +56,7 @@ impl Device {
 
     /// See also: [`IMMDevice::GetId`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdevice-getid)
     pub fn get_id(&self) -> windows::Result<WinString> {
-        Ok(unsafe { WinString::from_pwstr(self.inner.GetId()?) })
+        Ok(unsafe { WinString::from_com_pwstr(self.inner.GetId()?) })
     }
 
     /// See also: [`IMMDevice::GetState`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdevice-getstate)

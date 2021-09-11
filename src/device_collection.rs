@@ -5,6 +5,7 @@ use crate::{
 };
 
 /// See also: [`IMMDeviceCollection`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nn-mmdeviceapi-immdevicecollection)
+#[derive(Debug, Clone)]
 pub struct DeviceCollection {
     inner: IMMDeviceCollection,
 }
@@ -32,6 +33,7 @@ impl<'a> IntoIterator for &'a DeviceCollection {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct DeviceIter<'a> {
     inner: &'a DeviceCollection,
     range: Range<u32>,

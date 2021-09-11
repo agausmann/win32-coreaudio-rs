@@ -4,6 +4,7 @@ fn main() {
 
     windows::build! {
         Windows::Win32::{
+            Globalization::lstrlenW,
             Media::Audio::CoreAudio::{
                 DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT,
                 DEVICE_STATE_UNPLUGGED, DEVICE_STATEMASK_ALL, IMMDeviceEnumerator,
@@ -24,7 +25,9 @@ fn main() {
                     DEVPKEY_DeviceInterface_FriendlyName, DEVPKEY_Device_DeviceDesc,
                     DEVPKEY_Device_FriendlyName,
                 },
+                Memory::LocalFree,
             },
+            UI::Shell::{StrDupW, StrCmpW},
         },
     }
 }

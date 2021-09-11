@@ -8,7 +8,7 @@ pub trait AudioVolumeDuckNotification: 'static {
     /// See also: [`IAudioVolumeDuckNotification::OnVolumeDuckNotification`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiovolumeducknotification-onvolumeducknotification)
     fn on_volume_duck_notification(
         &mut self,
-        session_id: WinStr,
+        session_id: &WinStr,
         num_communication_sessions: u32,
     ) -> windows::Result<()> {
         let _ = (session_id, num_communication_sessions);
@@ -16,7 +16,7 @@ pub trait AudioVolumeDuckNotification: 'static {
     }
 
     /// See also: [`IAudioVolumeDuckNotification::OnVolumeUnduckNotification`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiovolumeducknotification-onvolumeunducknotification)
-    fn on_volume_unduck_notification(&mut self, session_id: WinStr) -> windows::Result<()> {
+    fn on_volume_unduck_notification(&mut self, session_id: &WinStr) -> windows::Result<()> {
         let _ = session_id;
         Ok(())
     }

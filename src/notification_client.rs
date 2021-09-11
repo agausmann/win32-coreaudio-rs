@@ -17,20 +17,20 @@ pub trait NotificationClient: 'static {
         &mut self,
         data_flow: DataFlow,
         role: DeviceRole,
-        device_id: WinStr,
+        device_id: &WinStr,
     ) -> windows::Result<()> {
         let _ = (data_flow, role, device_id);
         Ok(())
     }
 
     /// See also: [`IMMNotificationClient::OnDeviceAdded`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immnotificationclient-ondeviceadded)
-    fn on_device_added(&mut self, device_id: WinStr) -> windows::Result<()> {
+    fn on_device_added(&mut self, device_id: &WinStr) -> windows::Result<()> {
         let _ = device_id;
         Ok(())
     }
 
     /// See also: [`IMMNotificationClient::OnDeviceRemoved`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immnotificationclient-ondeviceremoved)
-    fn on_device_removed(&mut self, device_id: WinStr) -> windows::Result<()> {
+    fn on_device_removed(&mut self, device_id: &WinStr) -> windows::Result<()> {
         let _ = device_id;
         Ok(())
     }
@@ -38,7 +38,7 @@ pub trait NotificationClient: 'static {
     /// See also: [`IMMNotificationClient::OnDeviceStateChanged`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immnotificationclient-ondevicestatechanged)
     fn on_device_state_changed(
         &mut self,
-        device_id: WinStr,
+        device_id: &WinStr,
         state: DeviceState,
     ) -> windows::Result<()> {
         let _ = (device_id, state);
@@ -48,7 +48,7 @@ pub trait NotificationClient: 'static {
     /// See also: [`IMMNotificationClient::OnPropertyValueChanged`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immnotificationclient-onpropertyvaluechanged)
     fn on_property_value_changed(
         &mut self,
-        device_id: WinStr,
+        device_id: &WinStr,
         property_key: PropertyKey,
     ) -> windows::Result<()> {
         let _ = (device_id, property_key);

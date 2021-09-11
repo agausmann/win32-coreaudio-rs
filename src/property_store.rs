@@ -15,6 +15,7 @@ use crate::{
     string::WinString,
 };
 
+#[derive(Debug, Clone, Copy)]
 pub struct PropertyKey(PROPERTYKEY);
 
 impl PropertyKey {
@@ -28,6 +29,7 @@ impl PropertyKey {
 }
 
 /// See also: [`PROPVARIANT`](https://docs.microsoft.com/en-us/windows/win32/api/propidlbase/ns-propidlbase-propvariant)
+#[derive(Debug, Clone)]
 pub enum Property {
     Empty,
     Null,
@@ -83,7 +85,7 @@ impl Property {
         } else if tag == VT_BOOL {
             Self::Bool(unsafe { value.boolVal != 0 })
         } else if tag == VT_LPWSTR {
-            Self::Str(unsafe { WinString::from_pwstr(PropVariantToStringAlloc(&raw).unwrap()) })
+            Self::Str(unsafe { WinString::from_com_pwstr(PropVariantToStringAlloc(&raw).unwrap()) })
         } else {
             Self::Unsupported
         }
@@ -113,7 +115,7 @@ impl Property {
             Property::Str(x) => (
                 VT_LPWSTR,
                 Data {
-                    pwszVal: x.to_pwstr(),
+                    pwszVal: x.as_pwstr(),
                 },
             ),
             Property::Unsupported => panic!("cannot convert unsupported"),
@@ -133,6 +135,7 @@ impl Property {
 }
 
 /// See also: [`IPropertyStore`](https://docs.microsoft.com/en-us/windows/win32/api/propsys/nn-propsys-ipropertystore)
+#[derive(Debug, Clone)]
 pub struct PropertyStore {
     inner: IPropertyStore,
 }

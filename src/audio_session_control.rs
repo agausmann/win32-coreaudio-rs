@@ -14,6 +14,7 @@ use crate::{
 };
 
 /// See also: [`IAudioSessionControl`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nn-audiopolicy-iaudiosessioncontrol)
+#[derive(Debug, Clone)]
 pub struct AudioSessionControl {
     inner: IAudioSessionControl,
 }
@@ -28,7 +29,7 @@ impl AudioSessionControl {
         unsafe {
             self.inner
                 .GetDisplayName()
-                .map(|x| WinString::from_pwstr(x))
+                .map(|x| WinString::from_com_pwstr(x))
         }
     }
 
@@ -39,7 +40,11 @@ impl AudioSessionControl {
 
     /// See also: [`IAudioSessionControl::GetIconPath`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessioncontrol-geticonpath)
     pub fn get_icon_path(&self) -> windows::Result<WinString> {
-        unsafe { self.inner.GetIconPath().map(|x| WinString::from_pwstr(x)) }
+        unsafe {
+            self.inner
+                .GetIconPath()
+                .map(|x| WinString::from_com_pwstr(x))
+        }
     }
 
     /// See also: [`IAudioSessionControl::GetState`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessioncontrol-getstate)
@@ -69,12 +74,12 @@ impl AudioSessionControl {
     /// See also: [`IAudioSessionControl::SetDisplayName`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessioncontrol-setdisplayname)
     pub fn set_display_name(
         &self,
-        value: WinStr,
+        value: &WinStr,
         event_context: Option<&Guid>,
     ) -> windows::Result<()> {
         unsafe {
             self.inner
-                .SetDisplayName(value.to_pwstr(), as_raw_or_null(event_context))
+                .SetDisplayName(value.as_pwstr(), as_raw_or_null(event_context))
         }
     }
 
@@ -93,12 +98,12 @@ impl AudioSessionControl {
     /// See also: [`IAudioSessionControl::SetIconPath`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessioncontrol-seticonpath)
     pub fn set_icon_path(
         &self,
-        value: WinStr,
+        value: &WinStr,
         event_context: Option<&Guid>,
     ) -> windows::Result<()> {
         unsafe {
             self.inner
-                .SetIconPath(value.to_pwstr(), as_raw_or_null(event_context))
+                .SetIconPath(value.as_pwstr(), as_raw_or_null(event_context))
         }
     }
 
@@ -120,6 +125,7 @@ impl AudioSessionControl {
 }
 
 /// See also: [`IAudioSessionControl2`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nn-audiopolicy-iaudiosessioncontrol2)
+#[derive(Debug, Clone)]
 pub struct AudioSessionControl2 {
     inner: IAudioSessionControl2,
     downgrade: AudioSessionControl,
@@ -141,7 +147,7 @@ impl AudioSessionControl2 {
         unsafe {
             self.inner
                 .GetSessionIdentifier()
-                .map(|x| WinString::from_pwstr(x))
+                .map(|x| WinString::from_com_pwstr(x))
         }
     }
 
@@ -150,7 +156,7 @@ impl AudioSessionControl2 {
         unsafe {
             self.inner
                 .GetSessionInstanceIdentifier()
-                .map(|x| WinString::from_pwstr(x))
+                .map(|x| WinString::from_com_pwstr(x))
         }
     }
 
@@ -173,6 +179,7 @@ impl Deref for AudioSessionControl2 {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct AudioSessionEventsHandle {
     inner: IAudioSessionEvents,
 }

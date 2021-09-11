@@ -19,6 +19,7 @@ use crate::{
 };
 
 /// See also: [`IAudioSessionManager`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nn-audiopolicy-iaudiosessionmanager)
+#[derive(Debug, Clone)]
 pub struct AudioSessionManager {
     inner: IAudioSessionManager,
 }
@@ -62,6 +63,7 @@ impl AudioSessionManager {
 }
 
 /// See also: [`IAudioSessionManager2`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nn-audiopolicy-iaudiosessionmanager2)
+#[derive(Debug, Clone)]
 pub struct AudioSessionManager2 {
     inner: IAudioSessionManager2,
     downgrade: AudioSessionManager,
@@ -89,7 +91,7 @@ impl AudioSessionManager2 {
     /// See also: [`IAudioSessionManager2::RegisterDuckNotification`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessionmanager2-registerducknotification)
     pub fn register_duck_notification<T>(
         &self,
-        session_id: WinStr,
+        session_id: &WinStr,
         duck_notification: T,
     ) -> windows::Result<AudioVolumeDuckNotificationHandle>
     where
@@ -100,7 +102,7 @@ impl AudioSessionManager2 {
         );
         unsafe {
             self.inner
-                .RegisterDuckNotification(session_id.to_pwstr(), &duck_notification)?
+                .RegisterDuckNotification(session_id.as_pwstr(), &duck_notification)?
         };
         Ok(AudioVolumeDuckNotificationHandle {
             inner: duck_notification,
@@ -152,10 +154,12 @@ impl Deref for AudioSessionManager2 {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct AudioVolumeDuckNotificationHandle {
     inner: IAudioVolumeDuckNotification,
 }
 
+#[derive(Debug, Clone)]
 pub struct AudioSessionNotificationHandle {
     inner: IAudioSessionNotification,
 }

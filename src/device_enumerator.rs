@@ -11,6 +11,7 @@ use crate::{
 };
 
 /// See also: [`IMMDeviceEnumerator`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nn-mmdeviceapi-immdeviceenumerator)
+#[derive(Debug, Clone)]
 pub struct DeviceEnumerator {
     inner: IMMDeviceEnumerator,
 }
@@ -51,8 +52,8 @@ impl DeviceEnumerator {
     }
 
     /// See also: [`IMMDeviceEnumerator::GetDevice`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdeviceenumerator-getdevice)
-    pub fn get_device(&self, device_id: WinStr) -> windows::Result<Device> {
-        unsafe { self.inner.GetDevice(device_id.to_pwstr()).map(Device::new) }
+    pub fn get_device(&self, device_id: &WinStr) -> windows::Result<Device> {
+        unsafe { self.inner.GetDevice(device_id.as_pwstr()).map(Device::new) }
     }
 
     /// See also: [`IMMDeviceEnumerator::RegisterEndpointNotificationCallback`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdeviceenumerator-registerendpointnotificationcallback)
@@ -89,6 +90,7 @@ impl DeviceEnumerator {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct NotificationClientHandle {
     inner: IMMNotificationClient,
 }
