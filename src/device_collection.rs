@@ -24,20 +24,20 @@ impl DeviceCollection {
 }
 
 impl<'a> IntoIterator for &'a DeviceCollection {
-    type IntoIter = Iter<'a>;
+    type IntoIter = DeviceIter<'a>;
     type Item = Device;
 
     fn into_iter(self) -> Self::IntoIter {
-        Iter::new(self)
+        DeviceIter::new(self)
     }
 }
 
-pub struct Iter<'a> {
+pub struct DeviceIter<'a> {
     inner: &'a DeviceCollection,
     range: Range<u32>,
 }
 
-impl<'a> Iter<'a> {
+impl<'a> DeviceIter<'a> {
     pub(crate) fn new(inner: &'a DeviceCollection) -> Self {
         let count = inner.get_count().unwrap();
         Self {
@@ -47,7 +47,7 @@ impl<'a> Iter<'a> {
     }
 }
 
-impl<'a> Iterator for Iter<'a> {
+impl<'a> Iterator for DeviceIter<'a> {
     type Item = Device;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -62,5 +62,5 @@ impl<'a> Iterator for Iter<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for Iter<'a> {}
-impl<'a> FusedIterator for Iter<'a> {}
+impl<'a> ExactSizeIterator for DeviceIter<'a> {}
+impl<'a> FusedIterator for DeviceIter<'a> {}

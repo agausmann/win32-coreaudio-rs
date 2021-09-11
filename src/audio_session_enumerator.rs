@@ -25,20 +25,20 @@ impl AudioSessionEnumerator {
 }
 
 impl<'a> IntoIterator for &'a AudioSessionEnumerator {
-    type IntoIter = Iter<'a>;
+    type IntoIter = AudioSessionIter<'a>;
     type Item = AudioSessionControl;
 
     fn into_iter(self) -> Self::IntoIter {
-        Iter::new(self)
+        AudioSessionIter::new(self)
     }
 }
 
-pub struct Iter<'a> {
+pub struct AudioSessionIter<'a> {
     inner: &'a AudioSessionEnumerator,
     range: Range<i32>,
 }
 
-impl<'a> Iter<'a> {
+impl<'a> AudioSessionIter<'a> {
     pub(crate) fn new(inner: &'a AudioSessionEnumerator) -> Self {
         let count = inner.get_count().unwrap();
         Self {
@@ -48,7 +48,7 @@ impl<'a> Iter<'a> {
     }
 }
 
-impl<'a> Iterator for Iter<'a> {
+impl<'a> Iterator for AudioSessionIter<'a> {
     type Item = AudioSessionControl;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -63,5 +63,5 @@ impl<'a> Iterator for Iter<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for Iter<'a> {}
-impl<'a> FusedIterator for Iter<'a> {}
+impl<'a> ExactSizeIterator for AudioSessionIter<'a> {}
+impl<'a> FusedIterator for AudioSessionIter<'a> {}
