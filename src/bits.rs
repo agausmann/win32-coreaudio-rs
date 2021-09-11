@@ -2,9 +2,15 @@
 
 use crate::bindings::Windows::Win32::{
     Media::Audio::CoreAudio::{
-        eAll, eCapture, eCommunications, eConsole, eMultimedia, eRender, EDataFlow, ERole,
-        DEVICE_STATEMASK_ALL, DEVICE_STATE_ACTIVE, DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT,
-        DEVICE_STATE_UNPLUGGED, ENDPOINT_HARDWARE_SUPPORT_METER, ENDPOINT_HARDWARE_SUPPORT_MUTE,
+        eAll, eCapture, eCommunications, eConsole, eMultimedia, eRender,
+        AudioSessionDisconnectReason as EAudioSessionDisconnectReason,
+        AudioSessionState as EAudioSessionState, AudioSessionStateActive, AudioSessionStateExpired,
+        AudioSessionStateInactive, DisconnectReasonDeviceRemoval,
+        DisconnectReasonExclusiveModeOverride, DisconnectReasonFormatChanged,
+        DisconnectReasonServerShutdown, DisconnectReasonSessionDisconnected,
+        DisconnectReasonSessionLogoff, EDataFlow, ERole, DEVICE_STATEMASK_ALL, DEVICE_STATE_ACTIVE,
+        DEVICE_STATE_DISABLED, DEVICE_STATE_NOTPRESENT, DEVICE_STATE_UNPLUGGED,
+        ENDPOINT_HARDWARE_SUPPORT_METER, ENDPOINT_HARDWARE_SUPPORT_MUTE,
         ENDPOINT_HARDWARE_SUPPORT_VOLUME,
     },
     Storage::StructuredStorage::{STGM_READ, STGM_READWRITE, STGM_WRITE},
@@ -70,10 +76,27 @@ map_enum! {
         Communications = eCommunications,
     }
 
+    /// See also: [`STGM Constants`](https://docs.microsoft.com/en-us/windows/win32/stg/stgm-constants)
     pub enum StorageAccessMode: i32 {
         Read = STGM_READ,
         Write = STGM_WRITE,
         ReadWrite = STGM_READWRITE,
+    }
+
+    /// See also: [`AudioSessionState`](https://docs.microsoft.com/en-us/windows/win32/api/audiosessiontypes/ne-audiosessiontypes-audiosessionstate)
+    pub enum AudioSessionState: EAudioSessionState {
+        Active = AudioSessionStateActive,
+        Expired = AudioSessionStateExpired,
+        Inactive = AudioSessionStateInactive,
+    }
+
+    pub enum AudioSessionDisconnectReason: EAudioSessionDisconnectReason {
+        DeviceRemoval = DisconnectReasonDeviceRemoval,
+        ServerShutdown = DisconnectReasonServerShutdown,
+        FormatChanged = DisconnectReasonFormatChanged,
+        SessionLogoff = DisconnectReasonSessionLogoff,
+        SessionDisconnected = DisconnectReasonSessionDisconnected,
+        ExclusiveModeOverride = DisconnectReasonExclusiveModeOverride,
     }
 }
 

@@ -4,6 +4,7 @@ use crate::bindings::*;
 
 /// See also: [`IAudioSessionNotification`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nn-audiopolicy-iaudiosessionnotification)
 pub trait AudioSessionNotification: 'static {
+    /// See also: [`IAudioSessionNotification::OnSessionCreated`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessionnotification-onsessioncreated)
     fn on_session_created(&mut self, new_session: AudioSessionControl) -> windows::Result<()> {
         let _ = new_session;
         Ok(())

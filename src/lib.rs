@@ -10,6 +10,7 @@ pub mod audio_endpoint_volume;
 pub mod audio_endpoint_volume_callback;
 pub mod audio_session_control;
 pub mod audio_session_enumerator;
+pub mod audio_session_events;
 pub mod audio_session_manager;
 pub mod audio_session_notification;
 pub mod audio_volume_duck_notification;
@@ -21,6 +22,7 @@ pub mod notification_client;
 pub mod property_store;
 pub mod simple_audio_volume;
 pub mod string;
+pub(crate) mod util;
 
 use crate::bindings::Windows::Win32::System::Com::{CoInitializeEx, COINIT_MULTITHREADED};
 use std::sync::Once;
