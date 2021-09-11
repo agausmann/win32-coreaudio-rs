@@ -98,8 +98,19 @@ impl ToOwned for WinStr {
     }
 }
 
+impl PartialEq<WinString> for WinStr {
+    fn eq(&self, other: &WinString) -> bool {
+        self == other.as_winstr()
+    }
+}
+
+impl PartialOrd<WinString> for WinStr {
+    fn partial_cmp(&self, other: &WinString) -> Option<std::cmp::Ordering> {
+        self.partial_cmp(other.as_winstr())
+    }
+}
+
 /// An owned string value that will be automatically freed when dropped.
-#[derive(Debug)]
 pub struct WinString {
     winstr: *const WinStr,
     alloc: StringAlloc,
@@ -168,9 +179,47 @@ impl Borrow<WinStr> for WinString {
     }
 }
 
+impl Debug for WinString {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self.as_winstr())
+    }
+}
+
 impl Clone for WinString {
     fn clone(&self) -> Self {
         self.as_winstr().to_winstring()
+    }
+}
+
+impl PartialEq for WinString {
+    fn eq(&self, other: &Self) -> bool {
+        self.as_winstr() == other.as_winstr()
+    }
+}
+
+impl PartialEq<WinStr> for WinString {
+    fn eq(&self, other: &WinStr) -> bool {
+        self.as_winstr() == other
+    }
+}
+
+impl Eq for WinString {}
+
+impl PartialOrd for WinString {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.as_winstr().partial_cmp(other.as_winstr())
+    }
+}
+
+impl PartialOrd<WinStr> for WinString {
+    fn partial_cmp(&self, other: &WinStr) -> Option<std::cmp::Ordering> {
+        self.as_winstr().partial_cmp(other)
+    }
+}
+
+impl Ord for WinString {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.as_winstr().cmp(other.as_winstr())
     }
 }
 
