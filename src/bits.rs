@@ -20,12 +20,18 @@ macro_rules! map_enum {
     ($(
         $(#[$meta:meta])*
         $vis:vis enum $name:ident: $maptype:ident {
-            $($varname:ident = $varmap:expr,)*
+            $(
+                $(#[$varmeta:meta])*
+                $varname:ident = $varmap:expr,
+            )*
         }
     )*) => {$(
         $(#[$meta])*
         $vis enum $name {
-            $($varname),*
+            $(
+                $(#[$varmeta])*
+                $varname,
+            )*
         }
 
         impl $name {
@@ -49,12 +55,14 @@ macro_rules! map_enum {
 
 map_enum! {
     /// See also: [`EDataFlow`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/ne-mmdeviceapi-edataflow)
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub enum DataFlow: EDataFlow {
         Render = eRender,
         Capture = eCapture,
     }
 
     /// See also: [`EDataFlow`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/ne-mmdeviceapi-edataflow)
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub enum DataFlowMask: EDataFlow {
         Render = eRender,
         Capture = eCapture,
@@ -62,6 +70,7 @@ map_enum! {
     }
 
     /// See also: [`DEVICE_STATE_XXXX Constants`](https://docs.microsoft.com/en-us/windows/win32/coreaudio/device-state-xxx-constants)
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub enum DeviceState: u32 {
         Active = DEVICE_STATE_ACTIVE,
         Disabled = DEVICE_STATE_DISABLED,
@@ -70,6 +79,7 @@ map_enum! {
     }
 
     /// See also: [`ERole`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/ne-mmdeviceapi-erole)
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub enum DeviceRole: ERole {
         Console = eConsole,
         Multimedia = eMultimedia,
@@ -77,6 +87,7 @@ map_enum! {
     }
 
     /// See also: [`STGM Constants`](https://docs.microsoft.com/en-us/windows/win32/stg/stgm-constants)
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub enum StorageAccessMode: i32 {
         Read = STGM_READ,
         Write = STGM_WRITE,
@@ -84,12 +95,14 @@ map_enum! {
     }
 
     /// See also: [`AudioSessionState`](https://docs.microsoft.com/en-us/windows/win32/api/audiosessiontypes/ne-audiosessiontypes-audiosessionstate)
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub enum AudioSessionState: EAudioSessionState {
         Active = AudioSessionStateActive,
         Expired = AudioSessionStateExpired,
         Inactive = AudioSessionStateInactive,
     }
 
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub enum AudioSessionDisconnectReason: EAudioSessionDisconnectReason {
         DeviceRemoval = DisconnectReasonDeviceRemoval,
         ServerShutdown = DisconnectReasonServerShutdown,
