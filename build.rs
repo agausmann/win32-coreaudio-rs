@@ -13,6 +13,7 @@ fn main() {
                 AudioSessionState, AudioSessionDisconnectReason, IAudioSessionControl2,
                 IAudioSessionEnumerator, ISimpleAudioVolume, ENDPOINT_HARDWARE_SUPPORT_METER,
                 ENDPOINT_HARDWARE_SUPPORT_MUTE, ENDPOINT_HARDWARE_SUPPORT_VOLUME,
+                IAudioVolumeDuckNotification,
             },
             Storage::StructuredStorage::{STGM_READ, STGM_READWRITE, STGM_WRITE},
             System::{

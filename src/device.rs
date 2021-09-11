@@ -1,5 +1,6 @@
 use crate::{
     audio_endpoint_volume::AudioEndpointVolume,
+    audio_session_manager::AudioSessionManager,
     bindings::Windows::Win32::{
         Media::Audio::CoreAudio::IMMDevice,
         Storage::StructuredStorage::PROPVARIANT,
@@ -39,7 +40,11 @@ impl Device {
         Ok(T::from_raw(raw.unwrap()))
     }
 
-    pub fn get_audio_endpoint_volume(&self) -> windows::Result<AudioEndpointVolume> {
+    pub fn activate_audio_endpoint_volume(&self) -> windows::Result<AudioEndpointVolume> {
+        unsafe { self.activate(std::ptr::null_mut()) }
+    }
+
+    pub fn activate_audio_session_manager(&self) -> windows::Result<AudioSessionManager> {
         unsafe { self.activate(std::ptr::null_mut()) }
     }
 
