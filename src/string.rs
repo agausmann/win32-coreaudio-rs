@@ -5,6 +5,7 @@ use std::char::{decode_utf16, REPLACEMENT_CHARACTER};
 use std::convert::TryInto;
 use std::fmt::{self, Debug};
 use std::fmt::{Formatter, Write};
+use std::hash::{Hash, Hasher};
 use std::ops::Deref;
 
 use crate::bindings::Windows::Win32::{
@@ -220,6 +221,12 @@ impl PartialOrd<WinStr> for WinString {
 impl Ord for WinString {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.as_winstr().cmp(other.as_winstr())
+    }
+}
+
+impl Hash for WinString {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.as_winstr().hash(state)
     }
 }
 
