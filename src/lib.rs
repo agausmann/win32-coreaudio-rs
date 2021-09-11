@@ -26,7 +26,7 @@ pub(crate) mod util;
 
 pub use self::{
     audio_endpoint_volume::{AudioEndpointVolume, AudioEndpointVolumeCallbackHandle},
-    audio_endpoint_volume_callback::AudioEndpointVolumeCallback,
+    audio_endpoint_volume_callback::{AudioEndpointVolumeCallback, NotificationData},
     audio_session_control::{AudioSessionControl, AudioSessionControl2, AudioSessionEventsHandle},
     audio_session_enumerator::{AudioSessionEnumerator, AudioSessionIter},
     audio_session_events::AudioSessionEvents,
