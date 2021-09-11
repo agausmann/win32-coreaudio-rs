@@ -70,6 +70,10 @@ impl WinStr {
         }
         unsafe { WinString::from_local_pwstr(pwstr) }
     }
+
+    pub fn to_string_lossy(&self) -> String {
+        String::from_utf16_lossy(self.as_slice())
+    }
 }
 
 impl Debug for WinStr {
