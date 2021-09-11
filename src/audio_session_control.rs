@@ -10,6 +10,7 @@ use crate::{
     bits::AudioSessionState,
     string::{WinStr, WinString},
     util::as_raw_or_null,
+    SimpleAudioVolume,
 };
 
 /// See also: [`IAudioSessionControl`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nn-audiopolicy-iaudiosessioncontrol)
@@ -111,6 +112,10 @@ impl AudioSessionControl {
 
     pub fn upgrade(&self) -> windows::Result<AudioSessionControl2> {
         self.inner.cast().map(AudioSessionControl2::new)
+    }
+
+    pub fn get_simple_audio_volume(&self) -> windows::Result<SimpleAudioVolume> {
+        self.inner.cast().map(SimpleAudioVolume::new)
     }
 }
 

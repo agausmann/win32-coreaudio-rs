@@ -27,89 +27,85 @@ impl Activate for AudioEndpointVolume {
 
 impl AudioEndpointVolume {
     /// See also: [`IAudioEndpointVolume::GetChannelCount`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-getchannelcount)
-    pub fn get_channel_count(&self) -> u32 {
-        unsafe { self.inner.GetChannelCount().unwrap() }
+    pub fn get_channel_count(&self) -> windows::Result<u32> {
+        unsafe { self.inner.GetChannelCount() }
     }
 
     /// See also: [`IAudioEndpointVolume::GetChannelVolumeLevel`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-getchannelvolumelevel)
-    pub fn get_channel_volume_level(&self, channel: u32) -> Option<f32> {
-        unsafe { self.inner.GetChannelVolumeLevel(channel).ok() }
+    pub fn get_channel_volume_level(&self, channel: u32) -> windows::Result<f32> {
+        unsafe { self.inner.GetChannelVolumeLevel(channel) }
     }
 
     /// See also: [`IAudioEndpointVolume::GetChannelVolumeLevelScalar`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-getchannelvolumelevelscalar)
-    pub fn get_channel_volume_level_scalar(&self, channel: u32) -> Option<f32> {
-        unsafe { self.inner.GetChannelVolumeLevelScalar(channel).ok() }
+    pub fn get_channel_volume_level_scalar(&self, channel: u32) -> windows::Result<f32> {
+        unsafe { self.inner.GetChannelVolumeLevelScalar(channel) }
     }
 
     /// See also: [`IAudioEndpointVolume::GetMasterVolumeLevel`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-getmastervolumelevel)
-    pub fn get_master_volume_level(&self) -> f32 {
-        unsafe { self.inner.GetMasterVolumeLevel().unwrap() }
+    pub fn get_master_volume_level(&self) -> windows::Result<f32> {
+        unsafe { self.inner.GetMasterVolumeLevel() }
     }
 
     /// See also: [`IAudioEndpointVolume::GetMasterVolumeLevelScalar`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-getmastervolumelevelscalar)
-    pub fn get_master_volume_level_scalar(&self) -> f32 {
-        unsafe { self.inner.GetMasterVolumeLevelScalar().unwrap() }
+    pub fn get_master_volume_level_scalar(&self) -> windows::Result<f32> {
+        unsafe { self.inner.GetMasterVolumeLevelScalar() }
     }
 
     /// See also: [`IAudioEndpointVolume::GetMute`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-getmute)
-    pub fn get_mute(&self) -> bool {
-        unsafe { self.inner.GetMute().unwrap().into() }
+    pub fn get_mute(&self) -> windows::Result<bool> {
+        unsafe { self.inner.GetMute().map(Into::into) }
     }
 
     /// See also: [`IAudioEndpointVolume::GetVolumeRange`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-getvolumerange)
-    pub fn get_volume_range(&self) -> VolumeRange {
+    pub fn get_volume_range(&self) -> windows::Result<VolumeRange> {
         let mut volume_range = VolumeRange {
             min_db: 0.0,
             max_db: 0.0,
             increment_db: 0.0,
         };
         unsafe {
-            self.inner
-                .GetVolumeRange(
-                    &mut volume_range.min_db,
-                    &mut volume_range.max_db,
-                    &mut volume_range.increment_db,
-                )
-                .unwrap()
+            self.inner.GetVolumeRange(
+                &mut volume_range.min_db,
+                &mut volume_range.max_db,
+                &mut volume_range.increment_db,
+            )?
         };
-        volume_range
+        Ok(volume_range)
     }
 
     /// See also: [`IAudioEndpointVolume::GetVolumeStepInfo`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-getvolumestepinfo)
-    pub fn get_volume_step_info(&self) -> VolumeStepInfo {
+    pub fn get_volume_step_info(&self) -> windows::Result<VolumeStepInfo> {
         let mut volume_step_info = VolumeStepInfo {
             current_step: 0,
             num_steps: 0,
         };
         unsafe {
-            self.inner
-                .GetVolumeStepInfo(
-                    &mut volume_step_info.current_step,
-                    &mut volume_step_info.num_steps,
-                )
-                .unwrap()
+            self.inner.GetVolumeStepInfo(
+                &mut volume_step_info.current_step,
+                &mut volume_step_info.num_steps,
+            )?
         };
-        volume_step_info
+        Ok(volume_step_info)
     }
 
     /// See also: [`IAudioEndpointVolume::QueryHardwareSupport`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-queryhardwaresupport)
-    pub fn query_hardware_support(&self) -> HardwareSupportMask {
-        let raw = unsafe { self.inner.QueryHardwareSupport().unwrap() };
-        HardwareSupportMask::from_bits(raw).expect("invalid mask")
+    pub fn query_hardware_support(&self) -> windows::Result<HardwareSupportMask> {
+        let raw = unsafe { self.inner.QueryHardwareSupport()? };
+        Ok(HardwareSupportMask::from_bits(raw).expect("invalid mask"))
     }
 
     /// See also: [`IAudioEndpointVolume::RegisterControlChangeNotify`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-registercontrolchangenotify)
     pub fn register_control_change_notify<T>(
         &self,
         callback: T,
-    ) -> AudioEndpointVolumeCallbackHandle
+    ) -> windows::Result<AudioEndpointVolumeCallbackHandle>
     where
         T: AudioEndpointVolumeCallback,
     {
         let callback =
             IAudioEndpointVolumeCallback::from(AudioEndpointVolumeCallbackWrapper::new(callback));
         unsafe { self.inner.RegisterControlChangeNotify(&callback).unwrap() };
-        AudioEndpointVolumeCallbackHandle { inner: callback }
+        Ok(AudioEndpointVolumeCallbackHandle { inner: callback })
     }
 
     /// See also: [`IAudioEndpointVolume::UnregisterControlChangeNotify`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-unregistercontrolchangenotify)

@@ -15,6 +15,7 @@ use crate::{
     bits::{DeviceState, StorageAccessMode},
     property_store::{PropertyKey, PropertyStore},
     string::WinString,
+    AudioSessionManager2,
 };
 use windows::{Abi, Interface};
 
@@ -45,6 +46,10 @@ impl Device {
     }
 
     pub fn activate_audio_session_manager(&self) -> windows::Result<AudioSessionManager> {
+        unsafe { self.activate(std::ptr::null_mut()) }
+    }
+
+    pub fn activate_audio_session_manager2(&self) -> windows::Result<AudioSessionManager2> {
         unsafe { self.activate(std::ptr::null_mut()) }
     }
 

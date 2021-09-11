@@ -57,7 +57,7 @@ impl AudioSessionManager {
     }
 
     pub fn upgrade(&self) -> windows::Result<AudioSessionManager2> {
-        self.inner.cast().map(AudioSessionManager2::new)
+        self.inner.cast().map(AudioSessionManager2::from_raw)
     }
 }
 
@@ -67,19 +67,22 @@ pub struct AudioSessionManager2 {
     downgrade: AudioSessionManager,
 }
 
-impl AudioSessionManager2 {
-    pub(crate) fn new(inner: IAudioSessionManager2) -> Self {
+impl Activate for AudioSessionManager2 {
+    type Raw = IAudioSessionManager2;
+
+    fn from_raw(inner: Self::Raw) -> Self {
         let downgrade = AudioSessionManager::from_raw(inner.cast().unwrap());
         Self { inner, downgrade }
     }
+}
 
+impl AudioSessionManager2 {
     /// See also: [`IAudioSessionManager2::GetSessionEnumerator`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessionmanager2-getsessionenumerator)
-    pub fn get_session_enumerator(&self) -> AudioSessionEnumerator {
+    pub fn get_session_enumerator(&self) -> windows::Result<AudioSessionEnumerator> {
         unsafe {
             self.inner
                 .GetSessionEnumerator()
                 .map(AudioSessionEnumerator::new)
-                .unwrap()
         }
     }
 
