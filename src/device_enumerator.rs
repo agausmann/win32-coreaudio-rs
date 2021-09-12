@@ -66,12 +66,10 @@ impl DeviceEnumerator {
     {
         let wrapper =
             IMMNotificationClient::from(NotificationClientWrapper::new(notification_client));
-        //TODO addref
-        let result = unsafe { self.inner.RegisterEndpointNotificationCallback(&wrapper) };
-        if result.is_err() {
-            //TODO release
-        }
-        result?;
+        unsafe { self.inner.RegisterEndpointNotificationCallback(&wrapper)? };
+        // Reference count is not automatically updated on success:
+        //TODO AddRef: https://github.com/microsoft/windows-rs/issues/1125
+        std::mem::forget(wrapper.clone());
 
         Ok(NotificationClientHandle { inner: wrapper })
     }
@@ -85,7 +83,8 @@ impl DeviceEnumerator {
             self.inner
                 .UnregisterEndpointNotificationCallback(&handle.inner)?;
         }
-        // TODO release
+        //TODO Release: https://github.com/microsoft/windows-rs/issues/1125
+
         Ok(())
     }
 }
