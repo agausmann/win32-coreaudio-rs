@@ -106,15 +106,10 @@ impl AudioEndpointVolume {
         let callback =
             IAudioEndpointVolumeCallback::from(AudioEndpointVolumeCallbackWrapper::new(callback));
         unsafe { self.inner.RegisterControlChangeNotify(&callback).unwrap() };
-        Ok(AudioEndpointVolumeCallbackHandle { inner: callback })
-    }
-
-    /// See also: [`IAudioEndpointVolume::UnregisterControlChangeNotify`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-unregistercontrolchangenotify)
-    pub fn unregister_control_change_notify(
-        &self,
-        handle: &AudioEndpointVolumeCallbackHandle,
-    ) -> windows::Result<()> {
-        unsafe { self.inner.UnregisterControlChangeNotify(&handle.inner) }
+        Ok(AudioEndpointVolumeCallbackHandle {
+            inner: callback,
+            parent: self.inner.clone(),
+        })
     }
 
     /// See also: [`IAudioEndpointVolume::SetChannelVolumeLevel`](https://docs.microsoft.com/en-us/windows/win32/api/endpointvolume/nf-endpointvolume-iaudioendpointvolume-setchannelvolumelevel)
@@ -206,6 +201,20 @@ pub struct VolumeStepInfo {
 }
 
 #[derive(Debug, Clone)]
+#[must_use = "callback will be unregistered when the handle is dropped"]
 pub struct AudioEndpointVolumeCallbackHandle {
     inner: IAudioEndpointVolumeCallback,
+    parent: IAudioEndpointVolume,
+}
+
+impl AudioEndpointVolumeCallbackHandle {
+    pub fn unregister(self) {
+        // Don't have to do anything, handled by the Drop impl
+    }
+}
+
+impl Drop for AudioEndpointVolumeCallbackHandle {
+    fn drop(&mut self) {
+        unsafe { self.parent.UnregisterControlChangeNotify(&self.inner).ok() };
+    }
 }

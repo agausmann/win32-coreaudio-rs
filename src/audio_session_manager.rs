@@ -106,6 +106,7 @@ impl AudioSessionManager2 {
         };
         Ok(AudioVolumeDuckNotificationHandle {
             inner: duck_notification,
+            parent: self.inner.clone(),
         })
     }
 
@@ -126,23 +127,8 @@ impl AudioSessionManager2 {
         }
         Ok(AudioSessionNotificationHandle {
             inner: session_notification,
+            parent: self.inner.clone(),
         })
-    }
-
-    /// See also: [`IAudioSessionManager2::UnregisterDuckNotification`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessionmanager2-unregisterducknotification)
-    pub fn unregister_duck_notification(
-        &self,
-        handle: &AudioVolumeDuckNotificationHandle,
-    ) -> windows::Result<()> {
-        unsafe { self.inner.UnregisterDuckNotification(&handle.inner) }
-    }
-
-    /// See also: [`IAudioSessionManager2::UnregisterSessionNotification`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessionmanager2-unregistersessionnotification)
-    pub fn unregister_session_notification(
-        &self,
-        handle: &AudioSessionNotificationHandle,
-    ) -> windows::Result<()> {
-        unsafe { self.inner.UnregisterSessionNotification(&handle.inner) }
     }
 }
 
@@ -155,11 +141,39 @@ impl Deref for AudioSessionManager2 {
 }
 
 #[derive(Debug, Clone)]
+#[must_use = "callback will be unregistered when the handle is dropped"]
 pub struct AudioVolumeDuckNotificationHandle {
     inner: IAudioVolumeDuckNotification,
+    parent: IAudioSessionManager2,
+}
+
+impl AudioVolumeDuckNotificationHandle {
+    pub fn unregister(self) {
+        // Handled by the Drop impl
+    }
+}
+
+impl Drop for AudioVolumeDuckNotificationHandle {
+    fn drop(&mut self) {
+        unsafe { self.parent.UnregisterDuckNotification(&self.inner).ok() };
+    }
 }
 
 #[derive(Debug, Clone)]
+#[must_use = "callback will be unregistered when the handle is dropped"]
 pub struct AudioSessionNotificationHandle {
     inner: IAudioSessionNotification,
+    parent: IAudioSessionManager2,
+}
+
+impl AudioSessionNotificationHandle {
+    pub fn unregister(self) {
+        // Handled by the Drop impl
+    }
+}
+
+impl Drop for AudioSessionNotificationHandle {
+    fn drop(&mut self) {
+        unsafe { self.parent.UnregisterSessionNotification(&self.inner).ok() };
+    }
 }

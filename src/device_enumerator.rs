@@ -67,29 +67,33 @@ impl DeviceEnumerator {
         let wrapper =
             IMMNotificationClient::from(NotificationClientWrapper::new(notification_client));
         unsafe { self.inner.RegisterEndpointNotificationCallback(&wrapper)? };
-        // Reference count is not automatically updated on success:
-        //TODO AddRef: https://github.com/microsoft/windows-rs/issues/1125
-        std::mem::forget(wrapper.clone());
 
-        Ok(NotificationClientHandle { inner: wrapper })
-    }
-
-    /// See also: [`IMMDeviceEnumerator::UnregisterEndpointNotificationCallback`](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdeviceenumerator-unregisterendpointnotificationcallback)
-    pub fn unregister_endpoint_notification(
-        &self,
-        handle: &NotificationClientHandle,
-    ) -> windows::Result<()> {
-        unsafe {
-            self.inner
-                .UnregisterEndpointNotificationCallback(&handle.inner)?;
-        }
-        //TODO Release: https://github.com/microsoft/windows-rs/issues/1125
-
-        Ok(())
+        Ok(NotificationClientHandle {
+            inner: wrapper,
+            parent: self.inner.clone(),
+        })
     }
 }
 
 #[derive(Debug, Clone)]
+#[must_use = "callback will be unregistered when the handle is dropped"]
 pub struct NotificationClientHandle {
     inner: IMMNotificationClient,
+    parent: IMMDeviceEnumerator,
+}
+
+impl NotificationClientHandle {
+    pub fn unregister(self) {
+        // Handled by Drop impl
+    }
+}
+
+impl Drop for NotificationClientHandle {
+    fn drop(&mut self) {
+        unsafe {
+            self.parent
+                .UnregisterEndpointNotificationCallback(&self.inner)
+                .ok()
+        };
+    }
 }

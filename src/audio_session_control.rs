@@ -68,6 +68,7 @@ impl AudioSessionControl {
         };
         Ok(AudioSessionEventsHandle {
             inner: session_notification,
+            parent: self.inner.clone(),
         })
     }
 
@@ -105,14 +106,6 @@ impl AudioSessionControl {
             self.inner
                 .SetIconPath(value.as_pwstr(), as_raw_or_null(event_context))
         }
-    }
-
-    /// See also: [`IAudioSessionControl::UnregisterAudioSessionNotification`](https://docs.microsoft.com/en-us/windows/win32/api/audiopolicy/nf-audiopolicy-iaudiosessioncontrol-unregisteraudiosessionnotification)
-    pub fn unregister_audio_session_notification(
-        &self,
-        handle: &AudioSessionEventsHandle,
-    ) -> windows::Result<()> {
-        unsafe { self.inner.UnregisterAudioSessionNotification(&handle.inner) }
     }
 
     pub fn upgrade(&self) -> windows::Result<AudioSessionControl2> {
@@ -180,6 +173,24 @@ impl Deref for AudioSessionControl2 {
 }
 
 #[derive(Debug, Clone)]
+#[must_use = "callback will be unregistered when the handle is dropped"]
 pub struct AudioSessionEventsHandle {
     inner: IAudioSessionEvents,
+    parent: IAudioSessionControl,
+}
+
+impl AudioSessionEventsHandle {
+    pub fn unregister(self) {
+        // Handled by the Drop impl
+    }
+}
+
+impl Drop for AudioSessionEventsHandle {
+    fn drop(&mut self) {
+        unsafe {
+            self.parent
+                .UnregisterAudioSessionNotification(&self.inner)
+                .ok()
+        };
+    }
 }
